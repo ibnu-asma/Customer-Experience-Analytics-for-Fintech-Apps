@@ -5,200 +5,101 @@ This module provides functionality to perform sentiment analysis and
 thematic analysis on FinTech app reviews.
 """
 
-import logging
-import yaml
 import pandas as pd
-import numpy as np
-from pathlib import Path
-from textblob import TextBlob
 import spacy
-from collections import Counter
-from typing import Dict, List, Tuple, Optional
-
-# Set up logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+import logging
+from transformers import pipeline
+from scripts.utils import setup_logging
 
 class SentimentAnalyzer:
-    """Class for performing sentiment and thematic analysis on reviews."""
+    """Class to perform sentiment and thematic analysis on reviews."""
     
-    def __init__(self, config_path: str = "../config.yaml"):
-        """Initialize the sentiment analyzer with configuration.
-        
-        Args:
-            config_path: Path to the configuration YAML file.
-        """
-        self.config = self._load_config(config_path)
-        self.nlp = self._load_spacy_model()
-        self.sentiment_thresholds = self.config['sentiment']
-    
-    def _load_config(self, config_path: str) -> dict:
-        """Load configuration from YAML file.
-        
-        Args:
-            config_path: Path to the configuration file.
-            
-        Returns:
-            dict: Configuration dictionary.
-        """
+    def __init__(self, input_path="data/processed/reviews_clean.csv"):
+        """Initialize analyzer with data and models."""
+        setup_logging()
+        self.logger = logging.getLogger(__name__)
         try:
-            with open(config_path, 'r') as f:
-                return yaml.safe_load(f)
+            self.df = pd.read_csv(input_path)
+            self.df['review_id'] = self.df.index + 1
+            self.nlp = spacy.load('en_core_web_sm')
+            self.sentiment_analyzer = pipeline('sentiment-analysis', model='distilbert-base-uncased-finetuned-sst-2-english')
+            self.logger.info("Initialized SentimentAnalyzer with %d reviews", len(self.df))
         except Exception as e:
-            logger.error(f"Error loading config file: {e}")
-            raise
-    
-    def _load_spacy_model(self):
-        """Load spaCy model for NLP tasks."""
-        try:
-            model_name = self.config['sentiment'].get('model', 'en_core_web_sm')
-            return spacy.load(model_name)
-        except OSError:
-            logger.warning(f"{model_name} not found. Downloading...")
-            import subprocess
-            import sys
-            subprocess.check_call([sys.executable, "-m", "spacy", "download", model_name])
-            return spacy.load(model_name)
-    
-    def analyze_sentiment(self, text: str) -> Tuple[float, str]:
-        """Analyze sentiment of a given text.
-        
-        Args:
-            text: Input text to analyze.
-            
-        Returns:
-            tuple: (polarity, sentiment_label)
-        """
-        if not text or not isinstance(text, str):
-            return 0.0, "neutral"
-            
-        # Use TextBlob for sentiment analysis
-        analysis = TextBlob(text)
-        polarity = analysis.sentiment.polarity
-        
-        # Categorize sentiment
-        if polarity > self.sentiment_thresholds.get('threshold_positive', 0.2):
-            sentiment = "positive"
-        elif polarity < self.sentiment_thresholds.get('threshold_negative', -0.2):
-            sentiment = "negative"
-        else:
-            sentiment = "neutral"
-            
-        return polarity, sentiment
-    
-    def extract_key_phrases(self, text: str, top_n: int = 5) -> List[str]:
-        """Extract key phrases from text using spaCy.
-        
-        Args:
-            text: Input text.
-            top_n: Number of key phrases to return.
-            
-        Returns:
-            list: List of key phrases.
-        """
-        if not text or not isinstance(text, str):
-            return []
-            
-        doc = self.nlp(text)
-        
-        # Extract noun chunks and named entities
-        key_phrases = [chunk.text.lower() for chunk in doc.noun_chunks]
-        key_phrases.extend([ent.text.lower() for ent in doc.ents])
-        
-        # Count and return most common phrases
-        return [phrase for phrase, _ in Counter(key_phrases).most_common(top_n)]
-    
-    def analyze_reviews(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Perform sentiment analysis on a DataFrame of reviews.
-        
-        Args:
-            df: DataFrame containing reviews with a 'cleaned_text' column.
-            
-        Returns:
-            pd.DataFrame: DataFrame with added sentiment analysis columns.
-        """
-        logger.info("Starting sentiment analysis...")
-        
-        # Make a copy to avoid modifying the original
-        df_analyzed = df.copy()
-        
-        # Analyze sentiment
-        if 'cleaned_text' in df_analyzed.columns:
-            # Calculate sentiment scores
-            sentiment_results = df_analyzed['cleaned_text'].apply(
-                lambda x: self.analyze_sentiment(x) if pd.notnull(x) else (0.0, "neutral")
-            )
-            
-            # Unpack results
-            df_analyzed['sentiment_score'], df_analyzed['sentiment'] = zip(*sentiment_results)
-            
-            # Extract key phrases
-            df_analyzed['key_phrases'] = df_analyzed['cleaned_text'].apply(
-                lambda x: self.extract_key_phrases(x) if pd.notnull(x) else []
-            )
-        
-        logger.info(f"Sentiment analysis complete. Analyzed {len(df_analyzed)} reviews.")
-        return df_analyzed
-    
-    def save_analysis_results(self, df: pd.DataFrame, filename: str) -> str:
-        """Save analysis results to a CSV file.
-        
-        Args:
-            df: Analyzed DataFrame to save.
-            filename: Name for the output file.
-            
-        Returns:
-            str: Path to the saved file.
-        """
-        try:
-            # Create analysis results directory if it doesn't exist
-            analysis_dir = Path(self.config['paths']['processed_data']) / 'analysis'
-            analysis_dir.mkdir(parents=True, exist_ok=True)
-            
-            # Generate filepath
-            filepath = analysis_dir / f"{filename}_analyzed.csv"
-            
-            # Save to CSV
-            df.to_csv(filepath, index=False)
-            logger.info(f"Saved analysis results to {filepath}")
-            return str(filepath)
-        except Exception as e:
-            logger.error(f"Error saving analysis results: {e}")
+            self.logger.error("Initialization failed: %s", e)
             raise
 
-def main():
-    """Main function to run the sentiment analysis pipeline."""
-    try:
-        analyzer = SentimentAnalyzer()
-        
-        # Example: Process preprocessed data files
-        processed_dir = Path(analyzer.config['paths']['processed_data'])
-        
-        # Process each preprocessed file
-        for proc_file in processed_dir.glob('*_processed.csv'):
-            try:
-                logger.info(f"Analyzing {proc_file.name}...")
-                df = pd.read_csv(proc_file)
-                
-                # Perform sentiment analysis
-                df_analyzed = analyzer.analyze_reviews(df)
-                
-                # Save the analyzed data
-                output_filename = proc_file.stem.replace('_processed', '')
-                analyzer.save_analysis_results(df_analyzed, output_filename)
-                
-            except Exception as e:
-                logger.error(f"Error analyzing {proc_file.name}: {e}")
-                continue
-                
-    except Exception as e:
-        logger.error(f"Fatal error in sentiment analysis: {e}")
-        return 1
-    
-    return 0
+    def compute_sentiment(self):
+        """Compute sentiment scores for all reviews."""
+        try:
+            def get_sentiment(text):
+                result = self.sentiment_analyzer(text[:512])[0]  # Truncate to 512 tokens
+                label = 'neutral' if result['score'] < 0.6 else result['label'].lower()
+                score = result['score'] if result['label'] == 'POSITIVE' else 1 - result['score']
+                return label, score
+            
+            self.df['sentiment_label'], self.df['sentiment_score'] = zip(*self.df['review'].apply(get_sentiment))
+            self.logger.info("Computed sentiment for %d reviews", len(self.df))
+            return self.df
+        except Exception as e:
+            self.logger.error("Sentiment computation failed: %s", e)
+            return None
+
+    def extract_keywords(self):
+        """Extract keywords using spaCy."""
+        try:
+            def get_keywords(text):
+                doc = self.nlp(text.lower())
+                keywords = [token.text for token in doc if token.pos_ in ['NOUN', 'PROPN'] or token.dep_ == 'compound']
+                return keywords if keywords else ['none']
+            
+            self.df['keywords'] = self.df['review'].apply(get_keywords)
+            self.logger.info("Extracted keywords for %d reviews", len(self.df))
+            return self.df
+        except Exception as e:
+            self.logger.error("Keyword extraction failed: %s", e)
+            return None
+
+    def assign_themes(self):
+        """Assign themes based on keywords."""
+        try:
+            themes = {
+                'Account Access Issues': ['login', 'password', 'authentication', 'access', 'lockout'],
+                'Transaction Performance': ['transfer', 'payment', 'slow', 'delay', 'transaction'],
+                'User Interface': ['ui', 'design', 'navigation', 'layout', 'interface'],
+                'Customer Support': ['support', 'help', 'response', 'service', 'complaint'],
+                'Feature Requests': ['feature', 'option', 'budgeting', 'request', 'add']
+            }
+
+            def get_themes(keywords):
+                assigned = [theme for theme, kws in themes.items() if any(kw in keywords for kw in kws)]
+                return assigned if assigned else ['Other']
+            
+            self.df['themes'] = self.df['keywords'].apply(get_themes)
+            self.logger.info("Assigned themes to %d reviews", len(self.df))
+            
+            # Log themes per bank
+            for bank in self.df['bank'].unique():
+                bank_themes = self.df[self.df['bank'] == bank]['themes'].explode().value_counts()
+                self.logger.info("Themes for %s: %s", bank, bank_themes.to_dict())
+            return self.df
+        except Exception as e:
+            self.logger.error("Theme assignment failed: %s", e)
+            return None
+
+    def analyze(self, output_path="data/processed/reviews_analyzed.csv"):
+        """Run full analysis pipeline and save results."""
+        try:
+            self.compute_sentiment()
+            self.extract_keywords()
+            self.assign_themes()
+            output_df = self.df[['review_id', 'review', 'sentiment_label', 'sentiment_score', 'themes']]
+            output_df.to_csv(output_path, index=False)
+            self.logger.info("Saved %d analyzed reviews to %s", len(output_df), output_path)
+            return output_df
+        except Exception as e:
+            self.logger.error("Analysis failed: %s", e)
+            return None
 
 if __name__ == "__main__":
-    main()
+    analyzer = SentimentAnalyzer()
+    analyzer.analyze()
