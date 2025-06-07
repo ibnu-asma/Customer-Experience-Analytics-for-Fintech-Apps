@@ -1,6 +1,8 @@
 # FinTech Reviews Analytics
 
-A comprehensive analytics pipeline for collecting, processing, and analyzing FinTech application reviews.
+Overview
+
+This project analyzes Google Play Store reviews for three Ethiopian banks (CBE, BOA, Dashen) to provide insights on customer satisfaction and app improvements.
 
 ## Project Structure
 
@@ -61,3 +63,8 @@ pytest tests/
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+
+
+
+
