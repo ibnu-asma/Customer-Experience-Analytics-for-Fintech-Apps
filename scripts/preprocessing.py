@@ -1,6 +1,8 @@
+# This script preprocesses reviews by removing duplicates, 
+# handling missing data, and normalizing dates.
 import pandas as pd
 import logging
-from scripts.utils import setup_logging
+from utils import setup_logging
 
 class ReviewPreprocessor:
     """Class to preprocess Google Play Store review data."""
