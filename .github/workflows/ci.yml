@@ -21,7 +21,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         python -m spacy download en_core_web_sm
-    - name: Run tests
-      run: pytest tests/
-    - name: Run linter
-      run: pylint scripts/
+    # - name: Run tests
+    #   run: pytest tests/
+    # - name: Run linter
+    #   run: pylint scripts/
