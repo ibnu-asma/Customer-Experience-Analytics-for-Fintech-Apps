@@ -1,79 +1,10 @@
-# Application settings
-app:
-  name: "fintech-reviews-analytics"
-  version: "1.0.0"
-  log_level: "INFO"
-  data_dir: "./data"
-
-# Web scraping configuration
-scraping:
-  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-  request_delay: 2  # seconds between requests
-  max_retries: 3
-  timeout: 30  # seconds
-
-# Database configuration
-database:
-  host: "localhost"
-  port: 1521
-  service_name: "ORCLPDB1"
-  username: ""  # Will be loaded from environment variables
-  password: ""  # Will be loaded from environment variables
-  pool_size: 5
-  max_overflow: 10
-
-# Sentiment analysis settings
-sentiment:
-  model: "en_core_web_sm"  # spaCy model to use
-  threshold_positive: 0.2
-  threshold_negative: -0.2
-
-# Visualization settings
-visualization:
-  theme: "darkgrid"
-  style: "whitegrid"
-  palette: "viridis"
-  dpi: 300
-  format: "png"
-
-# Paths
-paths:
-  raw_data: "data/raw"
-  processed_data: "data/processed"
-  visualizations: "data/visualizations"
-  reports: "reports"
-  
-# Target FinTech apps to analyze
 apps:
-  - name: "Revolut"
-    package_name: "com.revolut.revolut"
-    
-  - name: "Wise"
-    package_name: "com.transferwise.android"
-    
-  - name: "N26"
-    package_name: "de.number26.android"
-    
-  - name: "Monzo"
-    package_name: "co.uk.getmoneysavingexpert.monzo"
-
-# Logging configuration
-logging:
-  version: 1
-  disable_existing_loggers: false
-  formatters:
-    standard:
-      format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-  handlers:
-    console:
-      class: "logging.StreamHandler"
-      level: "INFO"
-      formatter: "standard"
-    file:
-      class: "logging.FileHandler"
-      filename: "logs/app.log"
-      level: "DEBUG"
-      formatter: "standard"
-  root:
-    level: "INFO"
-    handlers: ["console", "file"]
+  cbe:
+    id: "com.commercialbankofethiopia.cbeapp"
+    name: "Commercial Bank of Ethiopia"
+  boa:
+    id: "com.bankofabyssinia.boaapp"
+    name: "Bank of Abyssinia"
+  dashen:
+    id: "com.dashenbank.dashenapp"
+    name: "Dashen Bank"
