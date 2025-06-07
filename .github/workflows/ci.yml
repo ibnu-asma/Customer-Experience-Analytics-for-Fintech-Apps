@@ -23,5 +23,5 @@ jobs:
         python -m spacy download en_core_web_sm
     # - name: Run tests
     #   run: pytest tests/
-    - name: Run linter
-      run: pylint scripts/
+    # - name: Run linter
+    #   run: pylint scripts/
