@@ -1,10 +1,10 @@
 apps:
   cbe:
-    id: "com.commercialbankofethiopia.cbeapp"
+    id: "com.combanketh.mobilebanking"
     name: "Commercial Bank of Ethiopia"
   boa:
-    id: "com.bankofabyssinia.boaapp"
+    id: "com.boa.boaMobileBanking"
     name: "Bank of Abyssinia"
   dashen:
-    id: "com.dashenbank.dashenapp"
+    id: "com.dashen.dashensuperapp"
     name: "Dashen Bank"

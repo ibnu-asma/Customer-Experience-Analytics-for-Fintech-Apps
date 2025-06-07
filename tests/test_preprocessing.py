@@ -1,10 +1,10 @@
-
 import pytest
 import pandas as pd
 from scripts.preprocessing import ReviewPreprocessor
 
 @pytest.fixture
 def preprocessor():
+    """Fixture to initialize ReviewPreprocessor."""
     return ReviewPreprocessor()
 
 @pytest.fixture
