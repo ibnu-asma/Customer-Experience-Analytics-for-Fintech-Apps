@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+.pytest_cache/
+*.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Data
+data/
+*.csv
+*.json
+*.parquet
+*.feather
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VSCode
+.vscode/*
+!.vscode/settings.json
+
+# Environment
+.env
+.conda
+data/
+Resources/
