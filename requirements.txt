@@ -1,3 +1,9 @@
 pandas
 numpy
 google-play-scraper
+numpy
+matplotlib
+seaborn
+scipy
+jupyter
+ipykernel
