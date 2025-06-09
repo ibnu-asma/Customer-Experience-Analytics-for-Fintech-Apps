@@ -5,26 +5,32 @@ This script preprocesses reviews with the following steps:
 3. Cleans and processes review text
 4. Adds additional text-based features
 """
+import os
 import re
 import string
 import pandas as pd
 import logging
 import emoji
-from nltk.corpus import stopwords
+import nltk
+from nltk.corpus import stopwords, words
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk import download as nltk_download
 from typing import Optional, List, Dict, Any
 
+
+
 # Download required NLTK data
 try:
-    nltk_download('punkt')
-    nltk_download('stopwords')
-    nltk_download('wordnet')
-    nltk_download('omw-1.4')
-    nltk_download('words')
+    nltk.download('punkt', quiet=True)
+    nltk.download('stopwords', quiet=True)
+    nltk.download('wordnet', quiet=True)
+    nltk.download('omw-1.4', quiet=True)
+    nltk.download('words', quiet=True)
+    nltk.download('wordnet', quiet=True)
 except Exception as e:
     print(f"Warning: Could not download NLTK data: {e}")
+    raise
 
 from utils import setup_logging
 
