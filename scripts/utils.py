@@ -1,13 +1,24 @@
-# This shared utility module sets up logging, which both data_collection.py and preprocessing.py will use. It’s included here as it’s a dependency for the scripts below.
-import logging
+# utils.py: Utility functions for logging
 
-def setup_logging():
-    """Configure logging for the project."""
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler('fintech-reviews-analytics.log'),
-            logging.StreamHandler()
-        ]
-    )
+import logging
+import os
+
+def setup_logging(log_file="fintech-reviews-analytics.log"):
+    """Set up logging with UTF-8 encoding."""
+    try:
+        # Create logs directory if it doesn't exist
+        os.makedirs(os.path.dirname(log_file) if os.path.dirname(log_file) else '.', exist_ok=True)
+        
+        # Configure logging
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            handlers=[
+                logging.FileHandler(log_file, encoding='utf-8'),  # Use UTF-8 for file
+                logging.StreamHandler()  # Console output
+            ]
+        )
+        logger = logging.getLogger(__name__)
+        logger.info("Logging initialized with UTF-8 encoding")
+    except Exception as e:
+        print(f"Failed to set up logging: {e}")
