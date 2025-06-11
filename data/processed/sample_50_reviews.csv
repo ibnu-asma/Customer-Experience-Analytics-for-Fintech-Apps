@@ -1,0 +1,51 @@
+review,rating,date,bank,source,review_id,sentiment_label,sentiment_score,keywords
+Easy to use,5,2025-04-01,Commercial Bank of Ethiopia,Google Play,1,POSITIVE,0.9988542795181274,"['Easy', 'use']"
+cool ❤,4,2025-04-04,Commercial Bank of Ethiopia,Google Play,2,POSITIVE,0.9997991919517517,['cool']
+its not working over safari network,1,2025-05-21,Commercial Bank of Ethiopia,Google Play,3,NEGATIVE,0.9991377592086792,"['not', 'working', 'safari', 'network']"
+"less network, specially to make fee for utility purpose",1,2025-04-11,Commercial Bank of Ethiopia,Google Play,4,NEGATIVE,0.994688868522644,"['less', 'network', 'specially', 'make', 'fee', 'utility', 'purpose']"
+i am very happy . i have small prob. after i transfer i cant put the transfer cashe bil to my dic.,5,2025-05-07,Commercial Bank of Ethiopia,Google Play,5,POSITIVE,0.9976927042007446,"['happy', 'have', 'small', 'prob', 'transfer', 'put', 'cashe', 'bil', 'dic']"
+You need to copy many things from other bank apps like Amole(Dashen),2,2025-04-06,Commercial Bank of Ethiopia,Google Play,6,NEGATIVE,0.9967620372772217,"['need', 'copy', 'things', 'other', 'bank', 'apps']"
+the most boring Mobil banking application in ethiopia.Please use alternative private banks mobile banking apps,1,2025-05-22,Commercial Bank of Ethiopia,Google Play,7,NEGATIVE,0.9986202716827393,"['most', 'boring', 'Mobil', 'banking', 'application', 'ethiopia', 'use', 'alternative', 'private', 'banks']"
+easy to use helpful in my life,5,2025-05-21,Commercial Bank of Ethiopia,Google Play,8,POSITIVE,0.9981144666671753,"['easy', 'use', 'helpful', 'life']"
+this app is very necessary app many people found it,5,2025-04-03,Commercial Bank of Ethiopia,Google Play,9,POSITIVE,0.9980692267417908,"['app', 'necessary', 'people', 'found']"
+lower system everything,3,2025-05-30,Commercial Bank of Ethiopia,Google Play,10,NEGATIVE,0.9993475079536438,"['lower', 'system']"
+how to I get my money,5,2025-05-22,Commercial Bank of Ethiopia,Google Play,11,NEGATIVE,0.9934091567993164,"['get', 'money']"
+sync problem may 22 2025 but the date stack on may 8 2025 help pls,5,2025-05-22,Commercial Bank of Ethiopia,Google Play,12,NEGATIVE,0.992516815662384,"['sync', 'problem', 'date', 'stack', 'may', 'help', 'pls', '22']"
+"I can simply describe this app as ""Making all your work easier"".",5,2025-04-28,Commercial Bank of Ethiopia,Google Play,13,POSITIVE,0.8382588624954224,"['simply', 'describe', 'app', 'Making', 'work', 'easier']"
+CBE is the best financial application and and very dimple to use. I would like to say thank you so much for the developer of application. I really appreciate this app.,5,2025-05-26,Commercial Bank of Ethiopia,Google Play,14,POSITIVE,0.9982792139053345,"['CBE', 'best', 'financial', 'application', 'dimple', 'use', 'like', 'say', 'thank', 'so']"
+amazing apps,5,2025-05-06,Commercial Bank of Ethiopia,Google Play,15,POSITIVE,0.9998716115951538,"['amazing', 'apps']"
+very very nice aplication,1,2025-04-08,Commercial Bank of Ethiopia,Google Play,16,POSITIVE,0.9998292922973633,"['nice', 'aplication']"
+well app,5,2025-04-20,Commercial Bank of Ethiopia,Google Play,17,POSITIVE,0.9993765950202942,"['well', 'app']"
+አንድ star ራሱ ይበዛበታል። i dont recomend to use this app also the bank,1,2024-11-12,Bank of Abyssinia,Google Play,18,NEGATIVE,0.9964038133621216,"['use', 'app', 'also', 'bank']"
+Nice,5,2024-08-03,Bank of Abyssinia,Google Play,19,POSITIVE,0.9998552799224854,['Nice']
+it's really good 👍,5,2025-04-23,Bank of Abyssinia,Google Play,20,POSITIVE,0.9998701810836792,"['really', 'good']"
+👍,5,2024-11-11,Bank of Abyssinia,Google Play,21,NEGATIVE,0.6970565915107727,[]
+Very poor proformance,1,2025-03-01,Bank of Abyssinia,Google Play,22,NEGATIVE,0.9998043179512024,"['poor', 'proformance']"
+Wonderfull app,5,2025-03-07,Bank of Abyssinia,Google Play,23,POSITIVE,0.9998815059661865,"['Wonderfull', 'app']"
+Nice,5,2024-07-23,Bank of Abyssinia,Google Play,24,POSITIVE,0.9998552799224854,['Nice']
+It's not opening. Really frustrating,1,2025-03-01,Bank of Abyssinia,Google Play,25,NEGATIVE,0.9997020363807678,"['not', 'opening', 'Really', 'frustrating']"
+"What's up I can't log in, what's wrong",5,2024-10-21,Bank of Abyssinia,Google Play,26,NEGATIVE,0.9989662170410156,"['up', 'log', 'wrong']"
+Perfect,5,2025-01-09,Bank of Abyssinia,Google Play,27,POSITIVE,0.9998517036437988,['Perfect']
+Good service.,3,2025-05-25,Bank of Abyssinia,Google Play,28,POSITIVE,0.9998533725738525,"['Good', 'service']"
+አቢስኒያ የሁሉም ምርጫ,5,2024-07-29,Bank of Abyssinia,Google Play,29,NEGATIVE,0.8337253928184509,"['yahulume', 'merechaa']"
+good application,5,2025-03-30,Bank of Abyssinia,Google Play,30,POSITIVE,0.999854564666748,"['good', 'application']"
+all worck,5,2025-03-19,Bank of Abyssinia,Google Play,31,NEGATIVE,0.9971314668655396,['worck']
+Good 👍,5,2025-01-03,Bank of Abyssinia,Google Play,32,POSITIVE,0.9998576641082764,['Good']
+boa of mobile backing,5,2025-04-09,Bank of Abyssinia,Google Play,33,NEGATIVE,0.980626106262207,"['boa', 'mobile', 'backing']"
+Corrupted and poor app,1,2024-07-24,Bank of Abyssinia,Google Play,34,NEGATIVE,0.9997439980506897,"['Corrupted', 'poor', 'app']"
+"A truly impressive app — user-friendly and a game-changer in Ethiopian banking. The Dashen Super App stands out as one of the most innovative and convenient digital banking solutions in Ethiopia’s financial history. Smooth navigation, seamless features, and a wide range of services all in one place. Well done!",5,2025-04-21,Dashen Bank,Google Play,35,POSITIVE,0.9998193383216858,"['truly', 'impressive', 'app', 'user', 'friendly', 'game', 'changer', 'Ethiopian', 'banking', 'Dashen']"
+"Good app, bad security",3,2025-02-06,Dashen Bank,Google Play,36,POSITIVE,0.989300549030304,"['Good', 'app', 'bad', 'security']"
+its best,5,2025-05-18,Dashen Bank,Google Play,37,POSITIVE,0.9998121857643127,['best']
+Too best,1,2025-04-21,Dashen Bank,Google Play,38,POSITIVE,0.8775483965873718,"['Too', 'best']"
+"there is nothing super about this app, repeatedly failed transaction and wastes customer valuable time. if you have to do system upgrade do it at a time when there is less traffic demand. your Technical difficulty should not be reflected on customer.",2,2025-04-23,Dashen Bank,Google Play,39,NEGATIVE,0.9993688464164734,"['is', 'super', 'app', 'repeatedly', 'failed', 'transaction', 'wastes', 'customer', 'valuable', 'time']"
+wowslnwoooo wowwww amazing !!!!!!!!,5,2025-04-28,Dashen Bank,Google Play,40,POSITIVE,0.9997221827507019,"['wowslnwoooo', 'wowwww', 'amazing']"
+Is not working,1,2025-01-24,Dashen Bank,Google Play,41,NEGATIVE,0.9997809529304504,"['not', 'working']"
+execellent,5,2025-04-23,Dashen Bank,Google Play,42,NEGATIVE,0.9866806864738464,['execellent']
+I really like this amazing application and Dashen Supper app that has made my life easier.,5,2025-04-21,Dashen Bank,Google Play,43,POSITIVE,0.9997171759605408,"['really', 'like', 'amazing', 'application', 'Dashen', 'Supper', 'app', 'made', 'life', 'easier']"
+"Proudly made in Ethiopia, this innovation delivers more than promised. The marketplace is a major boost for local commerce",5,2025-04-21,Dashen Bank,Google Play,44,POSITIVE,0.9998248219490051,"['Proudly', 'made', 'Ethiopia', 'innovation', 'delivers', 'more', 'promised', 'marketplace', 'major', 'boost']"
+Wow,5,2025-05-30,Dashen Bank,Google Play,45,POSITIVE,0.999592125415802,['wow']
+Ok,5,2025-02-01,Dashen Bank,Google Play,46,POSITIVE,0.9997851252555847,['Ok']
+wow,5,2025-05-12,Dashen Bank,Google Play,47,POSITIVE,0.999592125415802,['wow']
+"Best UI mobile banking app, props to design team",5,2025-04-30,Dashen Bank,Google Play,48,POSITIVE,0.9991565942764282,"['Best', 'UI', 'mobile', 'banking', 'app', 'props', 'design', 'team']"
+"Highly impressed! Dash Bank really nailed it with this app. Secure, reliable, and packed with features I use daily",5,2025-04-21,Dashen Bank,Google Play,49,POSITIVE,0.9998537302017212,"['Highly', 'impressed', 'Dash', 'Bank', 'really', 'nailed', 'app', 'Secure', 'reliable', 'packed']"
+Fantastic,5,2025-05-16,Dashen Bank,Google Play,50,POSITIVE,0.9998743534088135,['Fantastic']
