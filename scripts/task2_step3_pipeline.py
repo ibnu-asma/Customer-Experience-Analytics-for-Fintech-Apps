@@ -1,16 +1,16 @@
-# task2_step2_explore.py: Exploratory analysis for Task 2, Step 2
-# Purpose: Analyze 50 reviews for sentiment and keywords, propose themes
+# task2_step3_pipeline.py: Production pipeline for Task 2, Step 3
+# Purpose: Analyze all reviews for sentiment, keywords, themes
 
 import pandas as pd
 import spacy
-from transformers import pipeline
-from utils import setup_logging
 import logging
 import os
 import re
 from unidecode import unidecode
 from spacy.language import Language
 from spacy.tokens import Doc
+from utils import setup_logging
+from sentiment_analysis import compute_sentiment  # Assumed module
 
 # Set up logging
 setup_logging()
@@ -26,50 +26,12 @@ def load_data(input_path="data/processed/reviews_clean.csv"):
             missing = set(expected_columns) - set(available_columns)
             logger.warning("Missing columns: %s. Using available: %s", missing, available_columns)
         df = df[available_columns]
+        df['review_id'] = range(1, len(df) + 1)
         logger.info("Loaded %d reviews from %s", len(df), input_path)
         return df
     except Exception as e:
         logger.error("Failed to load data: %s", e)
         return None
-
-def sample_reviews(df, n=50):
-    """Sample ~50 reviews, balanced across banks."""
-    try:
-        n_per_bank = n // 3
-        remainder = n % 3
-        samples = []
-        for bank in df['bank'].unique():
-            bank_df = df[df['bank'] == bank]
-            sample_size = n_per_bank + (1 if remainder > 0 else 0)
-            remainder -= 1
-            sampled = bank_df.sample(n=min(sample_size, len(bank_df)), random_state=42)
-            samples.append(sampled)
-        sample_df = pd.concat(samples).reset_index(drop=True)
-        sample_df['review_id'] = range(1, len(sample_df) + 1)
-        logger.info("Sampled %d reviews: %s", len(sample_df), sample_df['bank'].value_counts().to_dict())
-        return sample_df
-    except Exception as e:
-        logger.error("Failed to sample reviews: %s", e)
-        return None
-
-def analyze_sentiment(reviews):
-    """Compute sentiment using DistilBERT."""
-    try:
-        sentiment_analyzer = pipeline('sentiment-analysis', model='distilbert-base-uncased-finetuned-sst-2-english')
-        sentiments = []
-        for review in reviews:
-            try:
-                result = sentiment_analyzer(review[:512])[0]
-                label = 'NEUTRAL' if result['score'] < 0.6 else result['label']
-                sentiments.append((label, result['score']))
-            except Exception as e:
-                logger.warning("Sentiment failed for review: %s", e)
-                sentiments.append(('UNKNOWN', 0.0))
-        logger.info("Computed sentiment for %d reviews", len(reviews))
-        return sentiments
-    except Exception as e:
-        logger.error("Sentiment analysis failed: %s", e)
-        return [('UNKNOWN', 0.0)] * len(reviews)
 
 def extract_keywords(reviews):
     """Extract keywords using spaCy, including bigrams, negations, entities."""
@@ -91,7 +53,7 @@ def extract_keywords(reviews):
             nlp.add_pipe("bigram_component", last=True)
 
         keywords_list = []
-        stop_words = {'anede', 'one', 'very', 'many', 'yebazaabataale', '', 'star', 'recomend'}  # Enhanced stop words
+        stop_words = {'anede', 'one', 'very', 'many', 'yebazaabataale', '', 'star', 'recomend', 'good', 'nice', 'poor', 'best', 'happy'}
         for review in reviews:
             try:
                 doc = nlp(review[:1000])
@@ -100,7 +62,7 @@ def extract_keywords(reviews):
                 for token in doc:
                     if (token.pos_ in ['NOUN', 'PROPN', 'VERB', 'ADJ', 'ADV'] or token.text.lower() in ['not', 'no']) and token.text.lower() not in stop_words:
                         kw = unidecode(token.text)
-                        if kw and re.match(r'[a-zA-Z0-9_]+$', kw):  # Validate keyword
+                        if kw and re.match(r'[a-zA-Z0-9_]+$', kw):
                             keywords.append(kw)
                 # Extract entities
                 for ent in doc.ents:
@@ -125,12 +87,12 @@ def extract_keywords(reviews):
         logger.error("Keyword extraction failed: %s", e)
         return [[]] * len(reviews)
 
-def propose_themes(sample_df):
+def propose_themes(df):
     """Propose 3-5 themes per bank based on keywords."""
     themes = {}
     try:
-        for bank in sample_df['bank'].unique():
-            bank_df = sample_df[sample_df['bank'] == bank]
+        for bank in df['bank'].unique():
+            bank_df = df[df['bank'] == bank]
             all_keywords = [kw for keywords in bank_df['keywords'] for kw in keywords]
             keyword_counts = pd.Series(all_keywords).value_counts().head(20).index.tolist()
             bank_themes = []
@@ -153,7 +115,7 @@ def propose_themes(sample_df):
                 bank_themes.append(('Performance Issues', matched))
             # Fallback theme
             used_keywords = sum([t[1] for t in bank_themes], [])
-            other_keywords = [kw for kw in keyword_counts if kw not in used_keywords and kw.lower() not in ['good', 'nice', 'poor', 'easy', 'cool', 'best', 'happy']][:5]
+            other_keywords = [kw for kw in keyword_counts if kw not in used_keywords and kw.lower() not in ['easy', 'cool']][:5]
             if other_keywords and len(bank_themes) < 3:
                 bank_themes.append(('Other Feedback', other_keywords))
             themes[bank] = bank_themes[:5]
@@ -163,30 +125,35 @@ def propose_themes(sample_df):
         logger.error("Theme proposal failed: %s", e)
         return {}
 
-def save_results(sample_df, output_path="data/processed/sample_50_reviews.csv"):
+def save_results(df, themes, output_path="data/processed/reviews_analyzed.csv"):
     """Save analysis results to CSV."""
     try:
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        sample_df.to_csv(output_path, index=False, encoding='utf-8')
+        # Add themes to dataframe
+        df['themes'] = df['bank'].map(lambda b: str(themes.get(b, [])))
+        df.to_csv(output_path, index=False, encoding='utf-8')
         logger.info("Saved results to %s", output_path)
     except Exception as e:
         logger.error("Failed to save results: %s", e)
 
 if __name__ == "__main__":
-    logger.info("Starting Task 2, Step 2 exploratory analysis")
+    logger.info("Starting Task 2, Step 3 production pipeline")
     df = load_data()
     if df is not None:
-        sample_df = sample_reviews(df)
-        if sample_df is not None:
-            sentiments = analyze_sentiment(sample_df['review'])
-            sample_df['sentiment_label'], sample_df['sentiment_score'] = zip(*sentiments)
-            sample_df['keywords'] = extract_keywords(sample_df['review'])
-            themes = propose_themes(sample_df)
-            print("Sample Analysis Results:\n", sample_df[['review_id', 'bank', 'sentiment_label', 'sentiment_score', 'keywords']].head(5))
-            print("\nProposed Themes:")
-            for bank, bank_themes in themes.items():
-                print(f"{bank}:")
-                for theme, keywords in bank_themes:
-                    print(f"  - {theme}: {keywords}")
-            save_results(sample_df)
-    logger.info("Completed Task 2, Step 2 exploratory analysis")
+        # Compute sentiment
+        sentiments = compute_sentiment(df['review'])
+        df['sentiment_label'], df['sentiment_score'] = zip(*sentiments)
+        # Extract keywords
+        df['keywords'] = extract_keywords(df['review'])
+        # Propose themes
+        themes = propose_themes(df)
+        # Save results
+        save_results(df, themes)
+        # Print summary
+        print("Sample Analysis Results:\n", df[['review_id', 'bank', 'sentiment_label', 'sentiment_score', 'keywords', 'themes']].head(5))
+        print("\nProposed Themes:")
+        for bank, bank_themes in themes.items():
+            print(f"{bank}:")
+            for theme, keywords in bank_themes:
+                print(f"  - {theme}: {keywords}")
+    logger.info("Completed Task 2, Step 3 production pipeline")
