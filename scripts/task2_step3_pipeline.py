@@ -114,18 +114,40 @@ def propose_themes(df):
         logger.error("Theme proposal failed: %s", e)
         return {}
 
+
+
+
+# ... (previous imports and functions remain the same until save_results)
+
+# ... (previous imports and functions remain the same until save_results)
+
 def save_results(df, themes, output_path="data/processed/reviews_analyzed.csv"):
     try:
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        df['themes'] = df['bank'].map(lambda b: str(themes.get(b, [])))
+        # Map themes per review based on keywords and review text
+        def assign_review_themes(row):
+            bank_themes = themes.get(row['bank'], [])
+            review_keywords = eval(row.get('keywords', '[]')) if isinstance(row.get('keywords'), str) else row.get('keywords', [])
+            review_text = str(row['review']).lower()
+            selected_themes = []
+            for theme, theme_kws in bank_themes:
+                if any(kw in review_text or kw in review_keywords for kw in theme_kws):
+                    selected_themes.append((theme, theme_kws))
+            return str(selected_themes[:5])  # Ensure string output
+
+        df['themes'] = df.apply(assign_review_themes, axis=1)
+        # Ensure keywords is a string
+        df['keywords'] = df['keywords'].apply(lambda x: str(x) if x is not None else '[]')
         df.to_csv(output_path, index=False, encoding='utf-8')
         logger.info("Saved results to %s", output_path)
         # Save to Oracle XE with oracledb
         dsn = oracledb.makedsn('localhost', 1521, service_name='XEPDB1')
         with oracledb.connect(user='sys', password='admin', dsn=dsn, mode=oracledb.SYSDBA) as connection:
             cursor = connection.cursor()
-            # Switch to bank_reviews PDB
             cursor.execute("ALTER SESSION SET CONTAINER = bank_reviews")
+            # Clear existing data to avoid duplicates
+            cursor.execute("DELETE FROM reviews")
+            cursor.execute("DELETE FROM banks")
             # Insert banks
             banks = df['bank'].unique()
             for bank_id, bank_name in enumerate(banks, 1):
@@ -136,11 +158,19 @@ def save_results(df, themes, output_path="data/processed/reviews_analyzed.csv"):
                 cursor.execute("""
                     INSERT INTO reviews (review_id, bank_id, review_text, rating, review_date, source, sentiment_label, sentiment_score, keywords, themes)
                     VALUES (:1, :2, :3, :4, TO_DATE(:5, 'YYYY-MM-DD'), :6, :7, :8, :9, :10)
-                """, (row['review_id'], bank_id, row['review'], row.get('rating'), row['date'], row['source'], row.get('sentiment_label'), row.get('sentiment_score'), str(row.get('keywords', [])), row['themes']))
+                """, (row['review_id'], bank_id, row['review'], row.get('rating'), row['date'], row['source'], row.get('sentiment_label'), row.get('sentiment_score'), row['keywords'], row['themes']))
             connection.commit()
             logger.info("Saved %d reviews to Oracle XE", len(df))
+        # Print sample results after themes are assigned
+        print("Sample Analysis Results:\n", df[['review_id', 'bank', 'sentiment_label', 'sentiment_score', 'keywords', 'themes']].head(5))
+        print("\nProposed Themes:")
+        for bank, bank_themes in themes.items():
+            print(f"{bank}:")
+            for theme, keywords in bank_themes:
+                print(f"  - {theme}: {keywords}")
     except Exception as e:
         logger.error("Failed to save results: %s", e)
+
 if __name__ == "__main__":
     logger.info("Starting Task 2, Step 3 production pipeline")
     df = load_data()
@@ -150,10 +180,4 @@ if __name__ == "__main__":
         df['keywords'] = extract_keywords(df['review'])
         themes = propose_themes(df)
         save_results(df, themes)
-        print("Sample Analysis Results:\n", df[['review_id', 'bank', 'sentiment_label', 'sentiment_score', 'keywords', 'themes']].head(5))
-        print("\nProposed Themes:")
-        for bank, bank_themes in themes.items():
-            print(f"{bank}:")
-            for theme, keywords in bank_themes:
-                print(f"  - {theme}: {keywords}")
     logger.info("Completed Task 2, Step 3 production pipeline")
