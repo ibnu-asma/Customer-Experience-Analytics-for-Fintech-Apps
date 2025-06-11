@@ -124,6 +124,8 @@ def save_results(df, themes, output_path="data/processed/reviews_analyzed.csv"):
         dsn = oracledb.makedsn('localhost', 1521, service_name='XEPDB1')
         with oracledb.connect(user='sys', password='admin', dsn=dsn, mode=oracledb.SYSDBA) as connection:
             cursor = connection.cursor()
+            # Switch to bank_reviews PDB
+            cursor.execute("ALTER SESSION SET CONTAINER = bank_reviews")
             # Insert banks
             banks = df['bank'].unique()
             for bank_id, bank_name in enumerate(banks, 1):
@@ -134,12 +136,11 @@ def save_results(df, themes, output_path="data/processed/reviews_analyzed.csv"):
                 cursor.execute("""
                     INSERT INTO reviews (review_id, bank_id, review_text, rating, review_date, source, sentiment_label, sentiment_score, keywords, themes)
                     VALUES (:1, :2, :3, :4, TO_DATE(:5, 'YYYY-MM-DD'), :6, :7, :8, :9, :10)
-                """, (row['review_id'], bank_id, row['review'], row['rating'], row['date'], row['source'], row['sentiment_label'], row['sentiment_score'], str(row['keywords']), row['themes']))
+                """, (row['review_id'], bank_id, row['review'], row.get('rating'), row['date'], row['source'], row.get('sentiment_label'), row.get('sentiment_score'), str(row.get('keywords', [])), row['themes']))
             connection.commit()
             logger.info("Saved %d reviews to Oracle XE", len(df))
     except Exception as e:
         logger.error("Failed to save results: %s", e)
-
 if __name__ == "__main__":
     logger.info("Starting Task 2, Step 3 production pipeline")
     df = load_data()
