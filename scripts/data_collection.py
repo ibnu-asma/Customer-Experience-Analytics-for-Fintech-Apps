@@ -9,6 +9,8 @@ from utils import setup_logging
 class ReviewScraper:
     """Class to scrape Google Play Store reviews for specified apps."""
     
+
+    
     def __init__(self, config_path="config.yaml"):
         """Initialize scraper with configuration."""
         setup_logging()
